@@ -1,19 +1,19 @@
 
 
 class Midi {
-  MidiBus[] _busses;
+  private MidiBus[] _busses;
   
-  final int BREATHCONTROLLERCC = 2;
+  private final int BREATHCONTROLLERCC = 2;
 
-  ControlChange _breathController;
-  boolean _breathControllerValueChanged;
+  private ControlChange _breathController;
+  private boolean _breathControllerValueChanged;
   
   // NoteOn is only used as a work arround for knowing if player blows or draws
-  Note _noteOn = new Note(0,0,0);
-  boolean _noteOnChanged;
-  Note _noteOnTunedPitch = new Note(0,0,0);
+  private Note _noteOn = new Note(0,0,0);
+  private boolean _noteOnChanged;
+  private Note _noteOnTunedPitch = new Note(0,0,0);
   
-  int[] _channels = {0};
+  private int[] _channels = {0};
   
   Midi(MidiBus[] busses, int[] channels){
     _channels = channels;
@@ -34,7 +34,7 @@ class Midi {
         _harmony = _harmonies[int(random(_harmonies.length))];
       }
       
-      _noteOnTunedPitch.pitch = _tuning.getPitch(_noteOn.pitch, _mouthPiece.slide().withSlide());;
+      _noteOnTunedPitch.pitch = _harmonica.tuning().getPitch(_noteOn.pitch, _harmonica.mouthPiece().slide().withSlide());;
       _noteOnTunedPitch.velocity = _noteOn.velocity;
       _harmony.setRoot(_noteOnTunedPitch);
       _harmony.turnNotesOn(_busses[0]);
@@ -54,9 +54,9 @@ class Midi {
   
   public void noteOn(Note note) {
     // Receive a noteOn
-    _noteOn = note;
-    _noteOnChanged = true;
-    _mouthPiece.setBlowOrDraw(note.pitch);
+    //_noteOn = note;
+    //_noteOnChanged = true;
+    _harmonica.mouthPiece().setBlowOrDraw(note.pitch);
   }
   
   public void controllerChange(ControlChange cc) {
@@ -64,7 +64,7 @@ class Midi {
     // Receive a controllerChange
     switch (cc.number) {
       case BREATHCONTROLLERCC:
-        _mouthPiece.setBreathForce(cc.channel, cc.value);
+        _harmonica.mouthPiece().setBreathForce(cc.channel, cc.value);
         if (_breathController == null || cc.value != _breathController.value) {
           _breathController.value = cc.value;
           _breathControllerValueChanged = true;
@@ -81,10 +81,10 @@ class Midi {
     if (message.getStatus() == 224) // pitch bend
     {
       byte[]msg = message.getMessage();
-      boolean slide = _mouthPiece.slide().withSlide();
-      _mouthPiece.slide().setPosition( (msg[2] * 128) + msg[1]);
+      boolean slide = _harmonica.mouthPiece().slide().withSlide();
+      _harmonica.mouthPiece().slide().setPosition( (msg[2] * 128) + msg[1]);
       
-      if (slide != _mouthPiece.slide().withSlide()) {
+      if (slide != _harmonica.mouthPiece().slide().withSlide()) {
         // noteOffChanged = true;
         _noteOnChanged = true;
       }

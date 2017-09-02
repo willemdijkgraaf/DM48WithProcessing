@@ -1,25 +1,50 @@
-class MouthPiece {
-  int[] _holes = new int[12];
-  int _x,_y,_w,_h;
-  boolean _isBlowing;
+import java.util.Observable;
+import java.util.Observer;
+
+class MouthPiece extends Observable {
+  private int[] _holes = new int[12];
+  private int _x,_y,_w,_h;
+  private boolean _isBlowing;
+  private Slide _slide;
+  private Tuning _tuning;
   
-  MouthPiece(int x, int y, int w, int h) {
+  MouthPiece(int x, int y, int w, int h, Tuning tuning) {
     _x = x;
     _y = y;
     _w = w;
     _h = h;
+    
+    _slide = new Slide(100, 200, 30);
+    _slide.addObserver(this);
+    _tuning = tuning;
   }
-  Slide _slide = new Slide(100, 200, 30);
 
+   public void update(Observable obs, Object obj)
+   {
+      if (obs == _slide) {
+        setChanged();
+        notifyObservers();
+      }
+   }
+   
   void setBreathForce(int hole, int force) {
     _holes[hole] = force;
   }
   
   void setBlowOrDraw (int pitch) {
-      // 0, 1 = blow
-      // 2, 3 = draw
-      int holePitch = pitch%4;
-      _isBlowing = holePitch < 2;
+    boolean oldIsBlowing = _isBlowing;
+    
+    // 0, 1 = blow
+    // 2, 3 = draw
+    int holePitch = pitch%4;
+    _isBlowing = holePitch < 2;
+      
+    // if blow direction changed, shall trigger new note
+    if (  _isBlowing != oldIsBlowing) {
+      // raise note changed event
+      setChanged();
+      notifyObservers();
+    }
   }
   
   boolean isBlowing() {

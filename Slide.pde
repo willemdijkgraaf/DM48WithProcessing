@@ -1,4 +1,6 @@
-class Slide {
+import java.util.Observable;
+
+public class Slide extends Observable {
   private int _x, _y, _h;
   private boolean _withSlide = false;
   private int _position = 8192;
@@ -11,8 +13,15 @@ class Slide {
   }
   
   void setPosition (int position) {
+    boolean oldWithSlide = _withSlide;
+    
     _position = position;
     _withSlide = (_position < (8192 - _offset));
+    
+    if (oldWithSlide != _withSlide) {
+      setChanged();
+      notifyObservers();
+    }
   }
   
   boolean withSlide(){return _withSlide;}

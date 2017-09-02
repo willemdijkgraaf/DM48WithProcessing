@@ -1,11 +1,11 @@
 // 60 - 107
 // translates whole tone tuning to solo tuning
 class Tuning {
-  int[] soloTuningTable = new int[256];
-  int[] soloTuning = new int[16];
-  MusicMath mm = new MusicMath();
   
-
+  private int[] soloTuningTable = new int[256];
+  private int[] soloTuning = new int[16];
+  private MusicMath mm = new MusicMath();
+  
   Tuning() {
     soloTuning[0] = mm.c_1;
     soloTuning[1] = mm.cs_1;
@@ -38,7 +38,7 @@ class Tuning {
     }
   }
   
-  int getPitch(int pitch, boolean withSlide) {
+  public int getPitch(int pitch, boolean withSlide) {
     if (withSlide) {pitch = pitch + 1;}
     return soloTuningTable[pitch + 20];
   }

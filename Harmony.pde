@@ -1,9 +1,9 @@
 import themidibus.*; //Import the library
 
 class Harmony {
-  Note _root;
-  int[] _intervals;
-  int[] _channels;
+  private Note _root;
+  private int[] _intervals;
+  private int[] _channels;
   
   Harmony ( int[] outputChannels) {
     _channels = outputChannels;

@@ -1,19 +1,17 @@
 import themidibus.*; //Import the library
 import javax.sound.midi.MidiMessage;
 
-MusicMath _mm;
-MouthPiece _mouthPiece;
-Harmony _harmony; // todo: refactor -> maybe strange place for this variable
-Harmony[] _harmonies; // todo: refactor -> maybe strange place for this variable
+private MusicMath _mm;
+private Harmonica _harmonica;
+private Harmony _harmony; // todo: refactor -> maybe strange place for this variable
+private Harmony[] _harmonies; // todo: refactor -> maybe strange place for this variable
 
-int[] _channels;
+private int[] _channels;
   
-Midi _midi;
-MidiBus[] _busses;
+private Midi _midi;
+private MidiBus[] _busses;
 
-Tuning _tuning = new Tuning();
-
-Debugger _debugger = new Debugger();
+public Debugger _debugger = new Debugger();
 
 void setup() {
   size(400, 400);
@@ -21,19 +19,18 @@ void setup() {
   
   _mm = new MusicMath();
   _channels = new int[] {0};
+  _harmonica = new Harmonica();
   initMidi();
   initHarmony();
-  initMouthPiece();
 }
 
 void draw() {
   background(0);
-  _mouthPiece.update();
+  _harmonica.update();
   _midi.update();
 }
 
 void noteOn(Note note) {
-  // Receive a noteOn
   _midi.noteOn(note);
 }
   
@@ -77,8 +74,4 @@ void initHarmony(){
   
   //harmonies = new Harmony[] {harmony1, harmony2, harmony3};
   _harmonies = new Harmony[] {harmony1};
-}
-
-void initMouthPiece(){
-  _mouthPiece =new MouthPiece(0,0, width, 100);
 }
