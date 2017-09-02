@@ -1,8 +1,6 @@
 
 
 class Midi {
-
-  
   MidiBus[] _busses;
   
   final int BREATHCONTROLLERCC = 2;

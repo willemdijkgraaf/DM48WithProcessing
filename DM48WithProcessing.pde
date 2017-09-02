@@ -1,19 +1,12 @@
 import themidibus.*; //Import the library
 import javax.sound.midi.MidiMessage;
 
-MusicMath _mm = new MusicMath();
+MusicMath _mm;
 MouthPiece _mouthPiece;
+Harmony _harmony; // todo: refactor -> maybe strange place for this variable
+Harmony[] _harmonies; // todo: refactor -> maybe strange place for this variable
 
-Harmony _harmony;
-Harmony[] _harmonies;
-
-int[] _channels = {0};
-
-final String softStep = "Port 1"; // Softstep 2
-final String expressionPedal = "Port 2"; // expression pedal connected to Softstep 2
-final String DM48 = "DM48"; // midi harmonica
-final String osxBus1Out = "Bus 1"; // output bus on MacBookPro
-final String pitchBender = "Mini Pitchbend Joystick"; // pitchbender from Brendan Power used as slide
+int[] _channels;
   
 Midi _midi;
 MidiBus[] _busses;
@@ -26,15 +19,48 @@ void setup() {
   size(400, 400);
   background(0);
   
+  _mm = new MusicMath();
+  _channels = new int[] {0};
+  initMidi();
+  initHarmony();
+  initMouthPiece();
+}
+
+void draw() {
+  background(0);
+  _mouthPiece.update();
+  _midi.update();
+}
+
+void noteOn(Note note) {
+  // Receive a noteOn
+  _midi.noteOn(note);
+}
+  
+void controllerChange(ControlChange cc) {
+  _midi.controllerChange(cc);
+}
+  
+void midiMessage(MidiMessage message) { // You can also use midiMessage(MidiMessage message, long timestamp, String bus_name)
+  _midi.midiMessage(message);
+}
+
+void initMidi(){
+  final String softStep = "Port 1"; // Softstep 2
+  final String expressionPedal = "Port 2"; // expression pedal connected to Softstep 2
+  final String DM48 = "DM48"; // midi harmonica
+  final String osxBus1Out = "Bus 1"; // output bus on MacBookPro
+  final String pitchBender = "Mini Pitchbend Joystick"; // pitchbender from Brendan Power used as slide
+  
   MidiBus bus1 = new MidiBus(this, DM48, osxBus1Out);
   //bus2 = new MidiBus(this, softStep, osxBus1Out);
   //bus3 = new MidiBus(this, expressionPedal, osxBus1Out);
   MidiBus bus4 = new MidiBus(this, pitchBender, osxBus1Out);
   _busses = new MidiBus[] {bus1, bus4};
   _midi = new Midi(_busses, _channels);
-  _mouthPiece =new MouthPiece(0,0, width, 100);
-  
-  
+}
+
+void initHarmony(){
   // first harmony
   Harmony harmony1 = new Harmony(_channels);
   //harmony1.intervals = new int[] {mm.unison, - mm.octave - mm.m3rd, mm.octave - mm.aug4th};
@@ -53,20 +79,6 @@ void setup() {
   _harmonies = new Harmony[] {harmony1};
 }
 
-void draw() {
-  background(0);
-  _mouthPiece.update();
-}
-
-void noteOn(Note note) {
-  // Receive a noteOn
-  _midi.noteOn(note);
-}
-  
-void controllerChange(ControlChange cc) {
-  _midi.controllerChange(cc);
-}
-  
-void midiMessage(MidiMessage message) { // You can also use midiMessage(MidiMessage message, long timestamp, String bus_name)
-  _midi.midiMessage(message);
+void initMouthPiece(){
+  _mouthPiece =new MouthPiece(0,0, width, 100);
 }
