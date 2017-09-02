@@ -27,6 +27,12 @@ class Harmony {
     //println();
   }
   
+  Note root() {
+    return _root;
+  }
+  
+  void setRoot(Note root){_root = root;}
+  
   void turnNotesOff(MidiBus midiBus){
     if (_root == null) return;
     int channel;
