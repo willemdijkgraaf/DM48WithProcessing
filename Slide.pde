@@ -1,8 +1,8 @@
 class Slide {
-  int _x, _y, _h;
-  boolean withSlide = false;
-  int _position = 8192;
-  final int _offset = 3000;
+  private int _x, _y, _h;
+  private boolean _withSlide = false;
+  private int _position = 8192;
+  private final int _offset = 3000;
     
   Slide(int x, int y, int h){
     _x = x;
@@ -12,15 +12,17 @@ class Slide {
   
   void setPosition (int position) {
     _position = position;
-    withSlide = (_position < (8192 - _offset));
+    _withSlide = (_position < (8192 - _offset));
   }
+  
+  boolean withSlide(){return _withSlide;}
   
   void update(){
     int pitchbendPerPixel = 13653/400;
     //ellipse(_position/pitchbendPerPixel, _y, _w,_w);
     
     int fill = 50;
-    if (withSlide) {fill = 150;}
+    if (_withSlide) {fill = 150;}
     fill(fill);
     rect(_x,_y, _position/pitchbendPerPixel,_h);
     fill(100);
