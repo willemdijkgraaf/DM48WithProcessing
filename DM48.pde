@@ -1,11 +1,11 @@
 import themidibus.*; //Import the library
 import javax.sound.midi.MidiMessage;
 
-String softStep = "Port 1";
-String expressionPedal = "Port 2";
-String DM48 = "DM48";
-String osxBus1Out = "Bus 1";
-String pitchBender = "Mini Pitchbend Joystick";
+String softStep = "Port 1"; // Softstep 2
+String expressionPedal = "Port 2"; // expression pedal connected to Softstep 2
+String DM48 = "DM48"; // midi harmonica
+String osxBus1Out = "Bus 1"; // output bus on MacBookPro
+String pitchBender = "Mini Pitchbend Joystick"; // pitchbender from Brendan Power used as slide
 
 MidiBus bus1;
 MidiBus bus2;
@@ -25,9 +25,9 @@ Note noteOn = new Note(0,0,0);
 boolean noteOnChanged;
 Note noteOnTunedPitch = new Note(0,0,0);
 
-Note noteOff = new Note(0,0,0);
-boolean noteOffChanged;
-Note noteOffTunedPitch = new Note(0,0,0);
+//Note noteOff = new Note(0,0,0);
+//boolean noteOffChanged;
+//Note noteOffTunedPitch = new Note(0,0,0);
 
 Harmony harmony;
 Harmony[] harmonies;
@@ -91,13 +91,13 @@ void draw() {
     harmony.turnNotesOn(bus1);
   }
     
-  if (noteOffChanged) {
-    if (harmony != null) {
-      noteOnTunedPitch.pitch = tuning.getPitch(noteOff.pitch, _slide.withSlide);
-      harmony.root = noteOnTunedPitch;
-      harmony.turnNotesOff(bus1);
-    }
-  }
+  //if (noteOffChanged) {
+  //  if (harmony != null) {
+  //    noteOnTunedPitch.pitch = tuning.getPitch(noteOff.pitch, _slide.withSlide);
+  //    harmony.root = noteOnTunedPitch;
+  //    harmony.turnNotesOff(bus1);
+  //  }
+  //}
   
   for (int channelIndex = 0; channelIndex < numberOfChannels; channelIndex = channelIndex+1) {
     int channel = channels[channelIndex];
@@ -108,7 +108,7 @@ void draw() {
   }
   
   noteOnChanged = false;
-  noteOffChanged = false;
+  //noteOffChanged = false;
   breathControllerValueChanged = false; 
 }
 
@@ -122,11 +122,11 @@ void noteOn(Note note) {
   
 }
 
-void noteOff(Note note) {
-  // Receive a noteOff
-  noteOff = note;
-  noteOffChanged = true;
-}
+//void noteOff(Note note) {
+//  // Receive a noteOff
+//  noteOff = note;
+//  noteOffChanged = true;
+//}
 
 void controllerChange(ControlChange cc) {
   if (cc == null) return;
@@ -153,17 +153,10 @@ void midiMessage(MidiMessage message) { // You can also use midiMessage(MidiMess
     boolean slide = _slide.withSlide;
     _slide.setPosition( (msg[2] * 128) + msg[1]);
     
-    if (noteOn != null && slide != _slide.withSlide) {
-      noteOffChanged = true;
+    if (slide != _slide.withSlide) {
+      // noteOffChanged = true;
       noteOnChanged = true;
     }
-  }
-  else {
-    return;
-    //println("Status Byte/MIDI Command:"+message.getStatus());
-    //for (int i = 1;i < message.getMessage().length;i++) {
-      //println("Param "+(i+1)+": "+(int)(message.getMessage()[i] & 0xFF));
-    //}
   }
 }
 
@@ -192,4 +185,10 @@ void printCC (ControlChange cc) {
   println("Channel:"+cc.channel);
   println("Number:"+cc.number);
   println("Value:"+cc.value);
+}
+void printMessage (MidiMessage message) {
+  println("Status Byte/MIDI Command:"+message.getStatus());
+  for (int i = 1;i < message.getMessage().length;i++) {
+    println("Param "+(i+1)+": "+(int)(message.getMessage()[i] & 0xFF));
+  }
 }
