@@ -14,20 +14,16 @@ MidiBus bus4;
 
 MusicMath mm = new MusicMath();
 MouthPiece _mouthPiece;
-Slide _slide;
 
 final int BREATHCONTROLLERCC = 2;
 
 ControlChange breathController;
 boolean breathControllerValueChanged;
 
+// NoteOn is only used as a work arround for knowing if player blows or draws
 Note noteOn = new Note(0,0,0);
 boolean noteOnChanged;
 Note noteOnTunedPitch = new Note(0,0,0);
-
-//Note noteOff = new Note(0,0,0);
-//boolean noteOffChanged;
-//Note noteOffTunedPitch = new Note(0,0,0);
 
 Harmony harmony;
 Harmony[] harmonies;
@@ -42,7 +38,6 @@ void setup() {
   background(0);
 
   _mouthPiece =new MouthPiece(0,0, width, 100);
-  _slide = new Slide(100, 200, 30);
   
   MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
 
@@ -75,7 +70,6 @@ void setup() {
 void draw() {
   background(0);
   _mouthPiece.update();
-  _slide.update();
   
   // cc & note on/off
   int numberOfChannels = channels.length;
@@ -84,20 +78,12 @@ void draw() {
     if (harmony == null || harmony.root == null || harmony.root.pitch != noteOn.pitch) {
       harmony = harmonies[int(random(harmonies.length))];
     }
-    _mouthPiece.setBlowOrDraw(noteOn.pitch);
-    noteOnTunedPitch.pitch = tuning.getPitch(noteOn.pitch, _slide.withSlide);;
+    
+    noteOnTunedPitch.pitch = tuning.getPitch(noteOn.pitch, _mouthPiece.slide().withSlide);;
     noteOnTunedPitch.velocity = noteOn.velocity;
     harmony.root = noteOnTunedPitch;
     harmony.turnNotesOn(bus1);
   }
-    
-  //if (noteOffChanged) {
-  //  if (harmony != null) {
-  //    noteOnTunedPitch.pitch = tuning.getPitch(noteOff.pitch, _slide.withSlide);
-  //    harmony.root = noteOnTunedPitch;
-  //    harmony.turnNotesOff(bus1);
-  //  }
-  //}
   
   for (int channelIndex = 0; channelIndex < numberOfChannels; channelIndex = channelIndex+1) {
     int channel = channels[channelIndex];
@@ -108,25 +94,16 @@ void draw() {
   }
   
   noteOnChanged = false;
-  //noteOffChanged = false;
   breathControllerValueChanged = false; 
 }
 
 void noteOn(Note note) {
   // Receive a noteOn
-  println("original: " + note.pitch);
   noteOn = note;
   noteOnChanged = true;
-  
-  printNoteOn(note);
+  _mouthPiece.setBlowOrDraw(note.pitch);
   
 }
-
-//void noteOff(Note note) {
-//  // Receive a noteOff
-//  noteOff = note;
-//  noteOffChanged = true;
-//}
 
 void controllerChange(ControlChange cc) {
   if (cc == null) return;
@@ -150,10 +127,10 @@ void midiMessage(MidiMessage message) { // You can also use midiMessage(MidiMess
   if (message.getStatus() == 224) // pitch bend
   {
     byte[]msg = message.getMessage();
-    boolean slide = _slide.withSlide;
-    _slide.setPosition( (msg[2] * 128) + msg[1]);
+    boolean slide = _mouthPiece.slide().withSlide;
+    _mouthPiece.slide().setPosition( (msg[2] * 128) + msg[1]);
     
-    if (slide != _slide.withSlide) {
+    if (slide != _mouthPiece.slide().withSlide) {
       // noteOffChanged = true;
       noteOnChanged = true;
     }
