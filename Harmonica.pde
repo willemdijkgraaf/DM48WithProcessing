@@ -39,6 +39,7 @@ public class Harmonica implements Observer {
       if (obs == _mouthPiece) {
         // previous values
         state.slideRatio = previousState.slideRatio;
+        state.isSlideIn = previousState.isSlideIn;
         // new values
         state.isPlaying = _mouthPiece.isPlaying();
         state.isBlowing = _mouthPiece.isBlowing();

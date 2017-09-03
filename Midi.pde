@@ -51,12 +51,15 @@ class Midi {
       _previousState.isBlowing = state.isBlowing;
       _previousState.hole = state.hole;
       _previousState.isPlaying = state.isPlaying;
+      _previousState.slideRatio = state.slideRatio;
     }
     // CC2
-    for (int channelIndex = 0; channelIndex < numberOfChannels; channelIndex = channelIndex+1) {
-      int channel = _channels[channelIndex];
-      if (_breathControllerValueChanged) {
-        ControlChange cc = new ControlChange(channel, BREATHCONTROLLERCC, _breathController.value);
+    if (_breathControllerValueChanged) {
+      float dampingFactor = 1 - _previousState.slideRatio;
+      int breathValue = (int)((float)_breathController.value * dampingFactor);
+      for (int channelIndex = 0; channelIndex < numberOfChannels; channelIndex = channelIndex+1) {
+        int channel = _channels[channelIndex];
+        ControlChange cc = new ControlChange(channel, BREATHCONTROLLERCC, breathValue);
         outputBus.sendControllerChange(cc);
       }
     }
