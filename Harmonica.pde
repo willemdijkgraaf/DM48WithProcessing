@@ -6,9 +6,11 @@ public class Harmonica implements Observer {
   private Tuning _tuning;
   private int _pitch;
   private boolean _pitchChanged;
-  private int _key = _mm.c4;
+  private int _key;
+  private boolean _wasPlaying;
   
-  Harmonica() {
+  Harmonica(int pitch) {
+     _key = pitch;
      _tuning = new Tuning();
      _mouthPiece = new MouthPiece(0,0,width, 100);
      _mouthPiece.addObserver(this);
@@ -17,11 +19,18 @@ public class Harmonica implements Observer {
    public void update(Observable obs, Object obj)
    {
       if (obs == _mouthPiece) {
-         int newPitch = determinePitch();
-         if (newPitch != _pitch) {
-           _pitch = newPitch;
-           _pitchChanged = true;
-         }
+        //pitch concidered changed if same note is repeated
+        boolean isPlaying = isPlaying();
+        if (isPlaying != _wasPlaying) {
+          _pitchChanged = true;
+          _wasPlaying = isPlaying;
+        }
+        // pitch concidered changed if other note is played
+       int newPitch = determinePitch();
+       if (newPitch != _pitch) {
+         _pitch = newPitch;
+         _pitchChanged = true;
+       }
       }
    }
    
@@ -38,12 +47,18 @@ public class Harmonica implements Observer {
      return _pitch;
    }
    
+   public boolean isPlaying() {
+     return _mouthPiece.isPlaying();
+   }
+   
    private int determinePitch() {
+     if (!isPlaying()) {return -1;}
+     
      int drawing = 0; 
      int hole = _mouthPiece.getCurrentHole();
      int slide = 0;
      
-     if (!_mouthPiece.isBlowing()) {
+     if (_mouthPiece.isDrawing()) {
        drawing = 2;
      }
      

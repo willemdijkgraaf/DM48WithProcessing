@@ -10,7 +10,7 @@ class Midi {
   //private Note _noteOn = new Note(0,0,0);
   //private boolean _noteOnChanged;
   //private Note _noteOnTunedPitch = new Note(0,0,0);
-  private int _noteOffPitch = 0;
+  private int _noteOffPitch = -1; // -1 = no note to turn off
   
   private int[] _channels = {0};
   
@@ -27,10 +27,21 @@ class Midi {
     int numberOfChannels = _channels.length;
     boolean isPitchChanged = _harmonica.isPitchChanged();
     
-    if (isPitchChanged) {
-      int pitch = _harmonica.pitch();
-      println("pitch: " + pitch);
+    // not playing -> send note off
+    if (!_harmonica.isPlaying() && _noteOffPitch != -1) {
       outputBus.sendNoteOff(0, _noteOffPitch, 0);
+      _noteOffPitch = -1;
+    }
+    
+    if (isPitchChanged) {
+      // turn off previous note
+      if (_noteOffPitch != -1) {
+        outputBus.sendNoteOff(0, _noteOffPitch, 0);
+        _noteOffPitch = -1;
+      }
+      
+      int pitch = _harmonica.pitch();
+      
       outputBus.sendNoteOn(0, pitch, 100);
       _noteOffPitch = pitch;
       

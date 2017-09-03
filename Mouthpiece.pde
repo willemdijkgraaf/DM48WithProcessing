@@ -27,24 +27,27 @@ class MouthPiece extends Observable implements Observer {
    }
    
   void setBreathForce(int hole, int force) {
+    boolean isPlaying = true;
     _holes[hole] = force;
-    if (_holes[0] != 0 && 
-        _holes[1] != 0 && 
-        _holes[2] != 0 && 
-        _holes[3] != 0 && 
-        _holes[4] != 0 && 
-        _holes[5] != 0 && 
-        _holes[6] != 0 && 
-        _holes[7] != 0 && 
-        _holes[8] != 0 && 
-        _holes[9] != 0 && 
-        _holes[10] != 0 && 
-        _holes[11] != 0 ) {
-      _isPlaying = false;
+    if (_holes[0] == 0 && 
+        _holes[1] == 0 && 
+        _holes[2] == 0 && 
+        _holes[3] == 0 && 
+        _holes[4] == 0 && 
+        _holes[5] == 0 && 
+        _holes[6] == 0 && 
+        _holes[7] == 0 && 
+        _holes[8] == 0 && 
+        _holes[9] == 0 && 
+        _holes[10] == 0 && 
+        _holes[11] == 0 ) {
+      isPlaying = false;
+    }
+    
+    if (_isPlaying != isPlaying) {
+      _isPlaying = isPlaying;
       setChanged();
       notifyObservers();
-    } else {
-      _isPlaying = true; 
     }
   }
   
@@ -72,7 +75,7 @@ class MouthPiece extends Observable implements Observer {
     return !_isBlowing;
   }
   
-  boolean isPLaying() {
+  boolean isPlaying() {
     return _isPlaying;
   }
   

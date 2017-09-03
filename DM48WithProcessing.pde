@@ -19,7 +19,7 @@ void setup() {
   
   _mm = new MusicMath();
   _channels = new int[] {0};
-  _harmonica = new Harmonica();
+  _harmonica = new Harmonica(_mm.c4);
   initMidi();
   initHarmony();
 }
