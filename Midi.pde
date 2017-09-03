@@ -27,27 +27,30 @@ class Midi {
     // note on/off
     int numberOfChannels = _channels.length;
     HarmonicaState state = _harmonica.getState();
-    if (state == null) return;
-    
-    // not playing -> send note off
-    if (!state.isPlaying) {
-      outputBus.sendNoteOff(0, _noteOffPitch, 0);
-      _noteOffPitch = -1;
-    }
-    
-    if (hasPitchChanged(state)) {
-      // turn off previous note
-      if (_noteOffPitch != -1) {
+    if (state != null) {
+      // not playing -> send note off
+      if (!state.isPlaying) {
         outputBus.sendNoteOff(0, _noteOffPitch, 0);
         _noteOffPitch = -1;
       }
       
-      int pitch = _harmonica.getPitch(state);
-      
-      outputBus.sendNoteOn(0, pitch, 100);
-      _noteOffPitch = pitch;
+      if (hasPitchChanged(state)) {
+        // turn off previous note
+        if (_noteOffPitch != -1) {
+          outputBus.sendNoteOff(0, _noteOffPitch, 0);
+          _noteOffPitch = -1;
+        }
+        
+        int pitch = _harmonica.getPitch(state);
+        
+        outputBus.sendNoteOn(0, pitch, 100);
+        _noteOffPitch = pitch;
+      }
+      _previousState.isSlideIn = state.isSlideIn;
+      _previousState.isBlowing = state.isBlowing;
+      _previousState.hole = state.hole;
+      _previousState.isPlaying = state.isPlaying;
     }
-    
     // CC2
     for (int channelIndex = 0; channelIndex < numberOfChannels; channelIndex = channelIndex+1) {
       int channel = _channels[channelIndex];
@@ -59,10 +62,7 @@ class Midi {
     
     _breathControllerValueChanged = false; 
     
-    _previousState.isSlideIn = state.isSlideIn;
-    _previousState.isBlowing = state.isBlowing;
-    _previousState.hole = state.hole;
-    _previousState.isPlaying = state.isPlaying;
+
   }
   
   private boolean hasPitchChanged(HarmonicaState state) {

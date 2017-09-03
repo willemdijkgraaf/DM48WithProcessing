@@ -39,6 +39,6 @@ class Tuning {
   }
   
   public int getPitch(int wholeToneBasedPitch) {
-    return soloTuningTable[wholeToneBasedPitch];
+    return soloTuningTable[wholeToneBasedPitch + 20];
   }
 }
