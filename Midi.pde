@@ -1,5 +1,5 @@
 class Midi {
-  private final int BREATHCONTROLLERCC = 2;
+  private final int MIDIBREATHCC = 2;
   private ControlChange _breathController;
   private boolean _breathControllerValueChanged;
   private int _noteOffPitch = -1; // -1 = no note to turn off
@@ -50,7 +50,7 @@ class Midi {
       int breathValue = (int)((float)_breathController.value * dampingFactor);
       for (int channelIndex = 0; channelIndex < numberOfChannels; channelIndex = channelIndex+1) {
         int channel = _channels[channelIndex];
-        ControlChange cc = new ControlChange(channel, BREATHCONTROLLERCC, breathValue);
+        ControlChange cc = new ControlChange(channel, MIDIBREATHCC, breathValue);
         outputBus.sendControllerChange(cc);
       }
     }
@@ -76,7 +76,7 @@ class Midi {
     if (cc == null) return;
     // Receive a controllerChange
     switch (cc.number) {
-      case BREATHCONTROLLERCC:
+      case MIDIBREATHCC:
         _harmonica.mouthPiece().setBreathForce(cc.channel, cc.value);
         if (Math.abs(cc.value - _breathController.value) > 1) {
           _breathController.value = cc.value;
