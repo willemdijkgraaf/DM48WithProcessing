@@ -1,33 +1,24 @@
 import java.util.Observable;
 import java.util.Observer;
 
-class MouthPiece extends Observable implements Observer {
+class MouthPiece extends Observable  {
   private int[] _holes = new int[12];
   private int _x,_y,_w,_h;
   private boolean _isBlowing; // true if blowing, false if drawing
   private boolean _isPlaying; // true if air pressure detected
-  private Slide _slide;
+  private int _currentHole;
   
   MouthPiece(int x, int y, int w, int h) {
     _x = x;
     _y = y;
     _w = w;
     _h = h;
-    
-    _slide = new Slide(100, 200, 30);
-    _slide.addObserver(this);
   }
-
-   public void update(Observable obs, Object obj)
-   {
-      if (obs == _slide) {
-        setChanged();
-        notifyObservers();
-      }
-   }
    
   void setBreathForce(int hole, int force) {
     boolean isPlaying = true;
+    boolean isCurrentHoleChanged = false;
+    
     _holes[hole] = force;
     if (_holes[0] == 0 && 
         _holes[1] == 0 && 
@@ -44,8 +35,15 @@ class MouthPiece extends Observable implements Observer {
       isPlaying = false;
     }
     
-    if (_isPlaying != isPlaying) {
+    if (isPlaying) { 
+      int currentHole = getCurrentHole();
+      isCurrentHoleChanged = currentHole != _currentHole;
+      _currentHole = currentHole;
+    }
+    
+    if (_isPlaying != isPlaying || isCurrentHoleChanged) {
       _isPlaying = isPlaying;
+      
       setChanged();
       notifyObservers();
     }
@@ -79,8 +77,11 @@ class MouthPiece extends Observable implements Observer {
     return _isPlaying;
   }
   
+  public int currentHole(){
+    return _currentHole;
+  }
   // in monophonic playing mode, this method return the hole with highest breath force
-  int getCurrentHole() {
+  private int getCurrentHole() {
     int selectedHole = -1;
     int highestBreathForce = -1;
     for (int hole = 0; hole < 12; hole = hole + 1){
@@ -90,24 +91,16 @@ class MouthPiece extends Observable implements Observer {
         highestBreathForce = breathForce;
       }
     }
-    
     return selectedHole;   
   }
   
-  Slide slide() {
-    return _slide;
-  }
-  
-  void update() {
+  void draw() {
     // blow or draw
     updateBlowOrDraw();
-    _slide.update();
     
     // mouthpiece
     int gap = 10;
     int w = (_w - (11 * gap)) / 12;
-    
-    int currentHole = getCurrentHole();
     
     for (int hole = 0; hole < 12; hole = hole + 1) {
       // draw holes
@@ -117,7 +110,7 @@ class MouthPiece extends Observable implements Observer {
       
       // draw breath force
       int breathForce = (int)(((float)_h / 128) * (float)_holes[hole]);
-      if (hole == currentHole) {fill(100);} else {fill(75);} // paint selected hole brighter than others
+      if (hole == _currentHole) {fill(100);} else {fill(75);} // paint selected hole brighter than others
       
       rect(x, _y + _h, w, -breathForce);
     }

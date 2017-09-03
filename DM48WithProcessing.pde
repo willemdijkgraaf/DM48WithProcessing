@@ -26,7 +26,7 @@ void setup() {
 
 void draw() {
   background(0);
-  _harmonica.update();
+  _harmonica.draw();
   _midi.update(_busses[0]);
 }
 
@@ -46,13 +46,14 @@ void initMidi(){
   final String softStep = "Port 1"; // Softstep 2
   final String expressionPedal = "Port 2"; // expression pedal connected to Softstep 2
   final String DM48 = "DM48"; // midi harmonica
-  final String osxBus1Out = "Bus 1"; // output bus on MacBookPro
+  //final String busOut = "Bus 1"; // output bus on MacBookPro dev machine
+  final String busOut = "loopMIDI Port 1"; // output bus on Windows 10 dev machine
   final String pitchBender = "Mini Pitchbend Joystick"; // pitchbender from Brendan Power used as slide
   
-  MidiBus bus1 = new MidiBus(this, DM48, osxBus1Out);
+  MidiBus bus1 = new MidiBus(this, DM48, busOut);
   //bus2 = new MidiBus(this, softStep, osxBus1Out);
   //bus3 = new MidiBus(this, expressionPedal, osxBus1Out);
-  MidiBus bus4 = new MidiBus(this, pitchBender, osxBus1Out);
+  MidiBus bus4 = new MidiBus(this, pitchBender, busOut);
   _busses = new MidiBus[] {bus1, bus4};
   _midi = new Midi(_channels);
 }

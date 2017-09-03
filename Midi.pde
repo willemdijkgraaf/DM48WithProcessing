@@ -13,6 +13,7 @@ class Midi {
   private int _noteOffPitch = -1; // -1 = no note to turn off
   
   private int[] _channels = {0};
+  private HarmonicaState _previousState = new HarmonicaState();
   
   Midi(int[] channels){
     _channels = channels;
@@ -25,34 +26,26 @@ class Midi {
   void update(MidiBus outputBus){
     // note on/off
     int numberOfChannels = _channels.length;
-    boolean isPitchChanged = _harmonica.isPitchChanged();
+    HarmonicaState state = _harmonica.getState();
+    if (state == null) return;
     
     // not playing -> send note off
-    if (!_harmonica.isPlaying() && _noteOffPitch != -1) {
+    if (!state.isPlaying) {
       outputBus.sendNoteOff(0, _noteOffPitch, 0);
       _noteOffPitch = -1;
     }
     
-    if (isPitchChanged) {
+    if (hasPitchChanged(state)) {
       // turn off previous note
       if (_noteOffPitch != -1) {
         outputBus.sendNoteOff(0, _noteOffPitch, 0);
         _noteOffPitch = -1;
       }
       
-      int pitch = _harmonica.pitch();
+      int pitch = _harmonica.getPitch(state);
       
       outputBus.sendNoteOn(0, pitch, 100);
       _noteOffPitch = pitch;
-      
-      //if (_harmony == null || _harmony.root() == null || _harmony.root().pitch != pitch) {
-      //  _harmony = _harmonies[int(random(_harmonies.length))];
-      //}
-      
-      //_noteOnTunedPitch.pitch = pitch;
-      //_noteOnTunedPitch.velocity = _noteOn.velocity;
-      //_harmony.setRoot(_noteOnTunedPitch);
-      //_harmony.turnNotesOn(outputBus);
     }
     
     // CC2
@@ -64,8 +57,19 @@ class Midi {
       }
     }
     
-    //_noteOnChanged = false;
     _breathControllerValueChanged = false; 
+    
+    _previousState.isSlideIn = state.isSlideIn;
+    _previousState.isBlowing = state.isBlowing;
+    _previousState.hole = state.hole;
+    _previousState.isPlaying = state.isPlaying;
+  }
+  
+  private boolean hasPitchChanged(HarmonicaState state) {
+    return 
+      state.isSlideIn != _previousState.isSlideIn ||
+      state.isBlowing != _previousState.isBlowing ||
+      state.hole != _previousState.hole;
   }
   
   public void noteOn(Note note) {
@@ -98,7 +102,7 @@ class Midi {
     {
       byte[]msg = message.getMessage();
       //boolean slide = _harmonica.mouthPiece().slide().withSlide();
-      _harmonica.mouthPiece().slide().setPosition( (msg[2] * 128) + msg[1]);
+      _harmonica.slide().setPosition( (msg[2] * 128) + msg[1]);
       
       //if (slide != _harmonica.mouthPiece().slide().withSlide()) {
       //  // noteOffChanged = true;
