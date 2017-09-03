@@ -34,17 +34,18 @@ class Midi {
         _noteOffPitch = -1;
       }
       
-      if (hasPitchChanged(state) && state.isPlaying) {
+      if (hasPitchChanged(state)) {
         // turn off previous note
         if (_noteOffPitch != -1) {
           outputBus.sendNoteOff(0, _noteOffPitch, 0);
           _noteOffPitch = -1;
         }
         
-        int pitch = _harmonica.getPitch(state);
-        
-        outputBus.sendNoteOn(0, pitch, 100);
-        _noteOffPitch = pitch;
+        if (state.isPlaying) {
+          int pitch = _harmonica.getPitch(state);
+          outputBus.sendNoteOn(0, pitch, 100);
+          _noteOffPitch = pitch;
+        }
       }
       _previousState.isSlideIn = state.isSlideIn;
       _previousState.isBlowing = state.isBlowing;
@@ -56,7 +57,7 @@ class Midi {
       int channel = _channels[channelIndex];
       if (_breathControllerValueChanged) {
         ControlChange cc = new ControlChange(channel, BREATHCONTROLLERCC, _breathController.value);
-        outputBus.sendControllerChange(cc); // Send a controllerChange
+        outputBus.sendControllerChange(cc);
       }
     }
     
