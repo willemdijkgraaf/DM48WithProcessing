@@ -1,14 +1,14 @@
 import java.util.Observable;
 import java.util.Observer;
 
-class MouthPiece extends Observable {
+class MouthPiece extends Observable implements Observer {
   private int[] _holes = new int[12];
   private int _x,_y,_w,_h;
-  private boolean _isBlowing;
+  private boolean _isBlowing; // true if blowing, false if drawing
+  private boolean _isPlaying; // true if air pressure detected
   private Slide _slide;
-  private Tuning _tuning;
   
-  MouthPiece(int x, int y, int w, int h, Tuning tuning) {
+  MouthPiece(int x, int y, int w, int h) {
     _x = x;
     _y = y;
     _w = w;
@@ -16,7 +16,6 @@ class MouthPiece extends Observable {
     
     _slide = new Slide(100, 200, 30);
     _slide.addObserver(this);
-    _tuning = tuning;
   }
 
    public void update(Observable obs, Object obj)
@@ -29,6 +28,24 @@ class MouthPiece extends Observable {
    
   void setBreathForce(int hole, int force) {
     _holes[hole] = force;
+    if (_holes[0] != 0 && 
+        _holes[1] != 0 && 
+        _holes[2] != 0 && 
+        _holes[3] != 0 && 
+        _holes[4] != 0 && 
+        _holes[5] != 0 && 
+        _holes[6] != 0 && 
+        _holes[7] != 0 && 
+        _holes[8] != 0 && 
+        _holes[9] != 0 && 
+        _holes[10] != 0 && 
+        _holes[11] != 0 ) {
+      _isPlaying = false;
+      setChanged();
+      notifyObservers();
+    } else {
+      _isPlaying = true; 
+    }
   }
   
   void setBlowOrDraw (int pitch) {
@@ -55,6 +72,10 @@ class MouthPiece extends Observable {
     return !_isBlowing;
   }
   
+  boolean isPLaying() {
+    return _isPlaying;
+  }
+  
   // in monophonic playing mode, this method return the hole with highest breath force
   int getCurrentHole() {
     int selectedHole = -1;
@@ -77,7 +98,7 @@ class MouthPiece extends Observable {
   void update() {
     // blow or draw
     updateBlowOrDraw();
-      _slide.update();
+    _slide.update();
     
     // mouthpiece
     int gap = 10;

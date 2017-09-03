@@ -38,8 +38,7 @@ class Tuning {
     }
   }
   
-  public int getPitch(int pitch, boolean withSlide) {
-    if (withSlide) {pitch = pitch + 1;}
-    return soloTuningTable[pitch + 20];
+  public int getPitch(int wholeToneBasedPitch) {
+    return soloTuningTable[wholeToneBasedPitch + 20];
   }
 }

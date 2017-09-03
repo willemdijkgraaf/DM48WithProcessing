@@ -3,28 +3,27 @@ import themidibus.*; //Import the library
 class Harmony {
   private Note _root;
   private int[] _intervals;
-  private int[] _channels;
   
-  Harmony ( int[] outputChannels) {
-    _channels = outputChannels;
+  Harmony () {
   }
 
   void turnNotesOn(MidiBus midiBus){
-    //print("harmony " + root.pitch + ",");
+    print("harmony " + _root.pitch + ",");
     if (_root == null) return;
     int channel;
     int numberOfChannels = _channels.length;
     int numberOfIntervals = _intervals.length;
     int pitch = _root.pitch;
     for (int channelIndex = 0; channelIndex < numberOfChannels; channelIndex = channelIndex+1) {
-       channel = _channels[channelIndex] - 1;
+       channel = _channels[channelIndex];
        for (int intervalIndex = 0; intervalIndex < numberOfIntervals; intervalIndex = intervalIndex+1) {
          pitch = pitch + _intervals[intervalIndex];
-         midiBus.sendNoteOn(channel, pitch, _root.velocity);
-         //print(pitch + ",");
+         
+         midiBus.sendNoteOn(0, pitch, _root.velocity);
+         print(pitch + ",");
        }
     }
-    //println();
+    println();
   }
   
   Note root() {
