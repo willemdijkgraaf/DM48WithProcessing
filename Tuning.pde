@@ -1,4 +1,3 @@
-// 60 - 107
 // translates whole tone tuning to solo tuning
 class Tuning {
   
@@ -39,6 +38,6 @@ class Tuning {
   }
   
   public int getPitch(int wholeToneBasedPitch) {
-    return soloTuningTable[wholeToneBasedPitch + 20];
+    return soloTuningTable[wholeToneBasedPitch + 20]; // todo: why this +20?
   }
 }

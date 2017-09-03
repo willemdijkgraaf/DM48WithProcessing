@@ -1,17 +1,8 @@
-
-
 class Midi {
   private final int BREATHCONTROLLERCC = 2;
-
   private ControlChange _breathController;
   private boolean _breathControllerValueChanged;
-  
-  // NoteOn is only used as a work arround for knowing if player blows or draws
-  //private Note _noteOn = new Note(0,0,0);
-  //private boolean _noteOnChanged;
-  //private Note _noteOnTunedPitch = new Note(0,0,0);
   private int _noteOffPitch = -1; // -1 = no note to turn off
-  
   private int[] _channels = {0};
   private HarmonicaState _previousState = new HarmonicaState();
   
@@ -63,10 +54,7 @@ class Midi {
         outputBus.sendControllerChange(cc);
       }
     }
-    
     _breathControllerValueChanged = false; 
-    
-
   }
   
   private boolean hasPitchChanged(HarmonicaState state) {
@@ -106,13 +94,7 @@ class Midi {
     if (message.getStatus() == 224) // pitch bend
     {
       byte[]msg = message.getMessage();
-      //boolean slide = _harmonica.mouthPiece().slide().withSlide();
       _harmonica.slide().setPosition( (msg[2] * 128) + msg[1]);
-      
-      //if (slide != _harmonica.mouthPiece().slide().withSlide()) {
-      //  // noteOffChanged = true;
-      //  _noteOnChanged = true;
-      //}
     }
   }
 }

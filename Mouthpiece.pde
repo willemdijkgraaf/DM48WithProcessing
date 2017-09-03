@@ -115,6 +115,7 @@ class MouthPiece extends Observable  {
       rect(x, _y + _h, w, -breathForce);
     }
   }
+  
   void updateBlowOrDraw() {
     int y = _y + 150;
     int x = _x + 50;
