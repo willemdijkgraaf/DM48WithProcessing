@@ -34,7 +34,7 @@ class Midi {
         _noteOffPitch = -1;
       }
       
-      if (hasPitchChanged(state)) {
+      if (hasPitchChanged(state) && state.isPlaying) {
         // turn off previous note
         if (_noteOffPitch != -1) {
           outputBus.sendNoteOff(0, _noteOffPitch, 0);
@@ -69,7 +69,8 @@ class Midi {
     return 
       state.isSlideIn != _previousState.isSlideIn ||
       state.isBlowing != _previousState.isBlowing ||
-      state.hole != _previousState.hole;
+      state.hole != _previousState.hole ||
+      state.isPlaying != _previousState.isPlaying;
   }
   
   public void noteOn(Note note) {
@@ -85,7 +86,7 @@ class Midi {
     switch (cc.number) {
       case BREATHCONTROLLERCC:
         _harmonica.mouthPiece().setBreathForce(cc.channel, cc.value);
-        if (_breathController == null || cc.value != _breathController.value) {
+        if (Math.abs(cc.value - _breathController.value) > 1) {
           _breathController.value = cc.value;
           _breathControllerValueChanged = true;
         }

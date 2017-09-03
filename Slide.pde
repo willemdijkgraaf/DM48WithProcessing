@@ -4,7 +4,7 @@ public class Slide extends Observable {
   private int _x, _y, _h;
   private boolean _isSlideIn = false;
   private int _position = 8192;
-  private float _slideInRatio;
+  private float _slideRatio;
   private final float _minimum = 2731;
   private final float _maximum = 5461;
     
@@ -16,14 +16,17 @@ public class Slide extends Observable {
   
   void setPosition (int position) {
     _position = position;
-    _slideInRatio = 1 - ((float)position - _minimum) / _maximum;
-    if (_slideInRatio < 0.3) {_isSlideIn = false;}
-    if (_slideInRatio > 0.6) {_isSlideIn = true;}
+    _slideRatio = 1 - ((float)position - _minimum) / _maximum;
+    if (_slideRatio < 0.5) {_isSlideIn = false;}
+    if (_slideRatio > 0.5) {
+      _isSlideIn = true;
+      _slideRatio = Math.abs((-1 + _slideRatio));  
+    }    
     setChanged();
     notifyObservers();
   }
   
-  float slideInRatio(){ return _slideInRatio; }
+  float slideRatio(){ return _slideRatio; }
   boolean isSlideIn() {return _isSlideIn;}
   
   void draw(){

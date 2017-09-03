@@ -1,6 +1,6 @@
 class HarmonicaState {
   int hole;
-  float slideInRatio;
+  float slideRatio;
   boolean isSlideIn;
   boolean isBlowing;
   boolean isPlaying;

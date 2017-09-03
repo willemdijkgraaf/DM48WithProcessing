@@ -38,7 +38,7 @@ public class Harmonica implements Observer {
      
       if (obs == _mouthPiece) {
         // previous values
-        state.slideInRatio = previousState.slideInRatio;
+        state.slideRatio = previousState.slideRatio;
         // new values
         state.isPlaying = _mouthPiece.isPlaying();
         state.isBlowing = _mouthPiece.isBlowing();
@@ -52,7 +52,7 @@ public class Harmonica implements Observer {
         state.isBlowing = previousState.isBlowing;
         state.hole = previousState.hole;
         // new values
-        state.slideInRatio = _slide.slideInRatio();
+        state.slideRatio = _slide.slideRatio();
         state.isSlideIn = _slide.isSlideIn();
         _bufferLastWriteIndex = index;
       }
@@ -72,7 +72,7 @@ public class Harmonica implements Observer {
        blowing = 2;
      }
      
-     if (state.slideInRatio > 0.5) {
+     if (state.isSlideIn) {
        slide = 1;
      }
      println("hole: " + state.hole);
